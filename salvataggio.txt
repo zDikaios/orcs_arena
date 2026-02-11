@@ -1,0 +1,5 @@
+numero_giocatori=1
+classe_giocatore=warrior
+nome_giocatore=PROVA
+stage=3
+oggetti=Pozione Mana,Pozione Vita
