@@ -49,7 +49,7 @@ def summona_nemico(stage: int) -> Enemy:
         strat = conmenovita()           #sopra al 7imo stage attacca chi ha meno vita
 
     return Enemy(
-        name=random.choice(nomi_nemici),
+        name=random.choice(nomi_nemici),  #così facendo però ogni volta che si carica un salvataggio il nemico cambia nome ***FIXARE
         level=lvl,
         max_hp=max_hp,
         hp=max_hp,
