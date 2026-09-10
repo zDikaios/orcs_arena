@@ -116,17 +116,19 @@ class Mage(personaggi):
 
     def usaoggetto(self, item: str, enemy: "Enemy") -> str:
         if item == "Pozione Vita":
-            self.heal(15)
+            self.heal(15)                                       #buffare pozione salute, magari 20% maxhp anzichè 155hp ***FIXARE
             return f"{self.name} usa una Pozione: +15 HP."
         if item == "Pozione Mana":
             before = self._mana
             self._mana = intervallonumerico(self._mana + 10, 0, self._max_mana)
             return f"{self.name} usa Mana Potion: Mana {before}->{self._mana}."
         if item == "Bomba":
-            enemy.take_damage(12)
+            enemy.take_damage(12)                           # buffare danno bomba ***FIXARE
             return f"{self.name} lancia una Bomba: 12 danni al nemico."
         if item == "Pozione Stamina":
             return f"{self.name} non può usare la pozione della stamina (solo per Guerriero)."
+        if item == "Pozione Scudo":
+            return "APPLICA_SCUDO"
         return f"Oggetto sconosciuto: {item}"
 
 
@@ -169,16 +171,18 @@ class Warrior(personaggi):
         return f"{self.name} si fascia: +{amount} HP (costo {costo} Stamina)."
 
     def usaoggetto(self, item: str, enemy: "Enemy") -> str:
-        if item == "potion":
+        if item == "Pozione Vita":
             self.heal(15)
             return f"{self.name} usa una Pozione: +15 HP."
-        if item == "stamina_potion":
+        if item == "Pozione Stamina":
             before = self._stamina
             self._stamina = intervallonumerico(self._stamina + 10, 0, self._max_stamina)
             return f"{self.name} usa Stamina Potion: ST {before}->{self._stamina}."
-        if item == "bomb":
+        if item == "Bomba":
             enemy.take_damage(12)
             return f"{self.name} lancia una Bomba: 12 danni al nemico."
-        if item == "mana_potion":
+        if item == "Pozione Mana":
             return f"{self.name} non può usare la pozione per mana, (solo per Mago)."
+        if item == "Pozione Scudo":
+            return "APPLICA_SCUDO"
         return f"Oggetto sconosciuto: {item}"

@@ -1,10 +1,12 @@
 from typing import List, Dict, Optional
-from utilities import richiestanumeroscelta, si_o_no, ee, titletext
+from utilities import richiestanumeroscelta, si_o_no, ee2, titletext2
 from items import random_item, descrizione_oggetti
 from characters import personaggi
 from nemici import Enemy, summona_nemico
 from creatore import creatorepersonaggio
 from saveload import saveload
+from pozioni import ScudoMagico
+from hall_of_fame import HallOfFame
 
 
 class Game:
@@ -46,11 +48,11 @@ class Game:
 
     def caricagioco(self) -> bool:
         try:
-            dati_di_salvataggio = saveload.load(self.percorso_di_salvataggio)      # prende i dati dal file
-            self.num_players = int(dati_di_salvataggio["num_players"])  # legge il numero di giocatori
-            self.stage = int(dati_di_salvataggio["stage"])              # legge lo stage
-            self.players = dati_di_salvataggio["players"]               # legge i personaggi
-            self.inventory = dati_di_salvataggio["inventory"]           # legge l'inventario
+            dati_di_salvataggio = saveload.load(self.percorso_di_salvataggio)     # prende i dati dal file
+            self.num_players = int(dati_di_salvataggio["num_players"])            # legge il numero di giocatori
+            self.stage = int(dati_di_salvataggio["stage"])                        # legge lo stage
+            self.players = dati_di_salvataggio["players"]                         # legge i personaggi
+            self.inventory = dati_di_salvataggio["inventory"]                     # legge l'inventario
             print(f"Salvataggio caricato: Stage {self.stage}/10, Giocatori={self.num_players}")
             return True
         except FileNotFoundError:
@@ -132,7 +134,14 @@ class Game:
                         if item is None:
                             messaggio_scelta = f"{player.name}: 'Non c'è niente di utile in questa borsa...'"
                         else:
-                            messaggio_scelta = player.usaoggetto(item, enemy)
+                            esito = player.usaoggetto(item, enemy)
+                            if esito == "APPLICA_SCUDO":
+                                # sostituisce il pg col decorator scudo
+                                idx = self.players.index(player)
+                                self.players[idx] = ScudoMagico(player, turni=2)
+                                messaggio_scelta = f"{player.name} beve la pozione scudo, difesa raddoppiata per 2 turni"
+                            else:
+                                messaggio_scelta = esito
                     elif action == 4:
                         self.salvagioco()
                         print(f"{player.name} ha deciso di prendersi una pausa")
@@ -151,12 +160,29 @@ class Game:
                     outputnemico = enemy.attack(self.players)
                     print(outputnemico)
 
-            # Sconfitta
+                # riduce il contatore dei turni del decoratore a fine round
+                for idx, p in enumerate(self.players):
+                    if isinstance(p, ScudoMagico):
+                        ancora_valido = p.scala_turno()
+                        if not ancora_valido:
+                            print(f"lo scudo magico di {p.name} si e esaurito")
+                            # si toglie il decoratore tornando al personaggio base
+                            self.players[idx] = p.target
+
+
+            # calcolo nomi e punteggio per hall of fame
+            nomi = " e ".join([p.name for p in self.players])
+            punti = (self.stage * 100) + sum([p.hp for p in self.players])
+
+            # sconfitta
             if self.totalpartykill():
                 print("\nDisfatta! Tutti i giocatori sono stati sconfitti!")
+                # salvataggio binario al game over
+                HallOfFame.aggiungi_punteggio(nomi, self.stage, punti)
+                HallOfFame.mostra()
                 return
 
-            # Vittoria
+            # vittoria stage
             print(f"\nNemico sconfitto! Stage {self.stage} completato.")
 
             # Level up + restore + ricompensa
@@ -175,13 +201,20 @@ class Game:
 
         print("\nL'ARENA HA UN NUOVO CAMPIONE!")
 
+        # salvataggio nella hall of fame e print
+        nomi = " e ".join([p.name for p in self.players])
+        punti = (self.stage * 100) + sum([p.hp for p in self.players])
+        HallOfFame.aggiungi_punteggio(nomi, self.stage - 1, punti)
+        HallOfFame.mostra()
+
     def menu_principale(self) -> None:
         while True:
-            print(titletext)
+            print(titletext2)
             print("\n             |1) Nuova partita")
             print("             |2) Carica salvataggio")
-            print("             |3) Exit")
-            choice = richiestanumeroscelta("             > ", [1, 2, 3, 13, 42, 69, 404, 420, 502, ])
+            print("             |3) Hall of Fame")
+            print("             |4) Exit")
+            choice = richiestanumeroscelta("             > ", [1, 2, 3, 4, 42, 69, 404, 420, 502])
 
             if choice == 1:
                 self.nuovogioco()
@@ -190,10 +223,12 @@ class Game:
                 if self.caricagioco():
                     self.menu_combat()
             elif choice == 3:
+                HallOfFame.mostra()
+            elif choice == 4:
                 print("Uscita dal gioco...")
                 return
             else:
-                print(ee)
+                print(ee2)
 
 
 
