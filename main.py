@@ -15,7 +15,8 @@ class Game:
         self.stage: int = 1
         self.players: List[personaggi] = []
         self.inventory: List[str] = []
-        self.percorso_di_salvataggio = "salvataggio.txt"
+        self.percorso_di_salvataggio = "salvataggio.txt"       #Per cambiare il salvataggio
+        self.durata_partita = 10                               #Numero di Stages Totali
 
     def nuovogioco(self) -> None:
         print("Nuova partita:")
@@ -80,7 +81,7 @@ class Game:
             conta: Dict[str, int] = {}
             for it in self.inventory:
                 conta[it] = conta.get(it, 0) + 1
-            inv_str = ", ".join([f"{k}x{v}" for k, v in conta.items()])
+            inv_str = ", ".join([f"{k} x{v}" for k, v in conta.items()])
             print(f"Inventario: {inv_str}")
         else:
             print("Inventario: (vuoto)")
@@ -88,7 +89,7 @@ class Game:
 
     def choose_item(self) -> Optional[str]:
         if not self.inventory:
-            print("Inventario vuoto.")
+            print("L'inventario è vuoto.")
             return None
         print("Scegli oggetto:")
         for i, it in enumerate(self.inventory, start=1):
@@ -109,7 +110,7 @@ class Game:
         return all(not p.ancoravivo() for p in self.players)
 
     def menu_combat(self) -> None:
-        while self.stage <= 10:
+        while self.stage <= self.durata_partita:
             enemy = summona_nemico(self.stage)
             print(f"\n***** Squillano le trombe, l'orco '{enemy.name}' è sceso in campo *****")
 
@@ -179,12 +180,10 @@ class Game:
             nomi = " e ".join([p.name for p in self.players])
             punti = (self.stage * 100) + sum([p.hp for p in self.players])
 
-            # sconfitta
+            # Sconfitta
             if self.totalpartykill():
                 print("\nDisfatta! Tutti i giocatori sono stati sconfitti!")
-                # salvataggio binario al game over
-                HallOfFame.aggiungi_punteggio(nomi, self.stage, punti)
-                HallOfFame.mostra()
+                HallOfFame.new_record(self.players, self.stage)     #Registrazione record punteggio
                 return
 
             # vittoria stage
@@ -204,13 +203,9 @@ class Game:
 
             self.stage += 1
 
+        ## VITTORIA TOTALE
         print("\nL'ARENA HA UN NUOVO CAMPIONE!")
-
-        # salvataggio nella hall of fame e print
-        nomi = " e ".join([p.name for p in self.players])
-        punti = (self.stage * 100) + sum([p.hp for p in self.players])
-        HallOfFame.aggiungi_punteggio(nomi, self.stage - 1, punti)
-        HallOfFame.mostra()
+        HallOfFame.new_record(self.players, self.stage)     #Registrazione record punteggio
 
     def menu_principale(self) -> None:
         while True:

@@ -1,7 +1,8 @@
 import os
 from typing import List, Dict, Any
 
-#Una Hall of Fame che mostra i 10 migliori punteggi dei giocatori (Punteggio = Stage*100 + Vita residua)
+# Una Hall of Fame che mostra i 10 migliori punteggi dei giocatori
+# (Punteggio = Stage*100 + Vita residua) + 200 punti if singleplayer
 
 class HallOfFame:
     percorso_hof = "hall_of_fame.bin"
@@ -10,7 +11,19 @@ class HallOfFame:
     limite_record = 10  # memorizza solo i migliori dieci
 
     @staticmethod
-    def aggiungi_punteggio(nomi: str, stage: int, punti: int):
+    def new_record(players: list, stage_raggiunto: int) -> None:
+        nomi = " e ".join([p.name for p in players])
+
+        # 200 punti bonus se si gioca in singleplayer
+        bonus_solo = 200 if len(players) == 1 else 0
+        punti = (stage_raggiunto * 100) + sum([p.hp for p in players]) + bonus_solo
+
+        # salvataggio binario e stampa
+        HallOfFame.memorizza_punteggio(nomi, stage_raggiunto, punti)
+        HallOfFame.mostra()
+
+    @staticmethod
+    def memorizza_punteggio(nomi: str, stage: int, punti: int):
         records = HallOfFame.leggi_classifica()
         records.append({"nomi": nomi, "stage": stage, "punti": punti})
 
@@ -52,7 +65,7 @@ class HallOfFame:
 
 
     @staticmethod
-    def mostra():
+    def mostra():               # Mostra la hall of fame completa
         dati = HallOfFame.leggi_classifica()
         print("\nx=x=x=x= Hall of fame =x=x=x=x")
         if not dati:
@@ -60,4 +73,4 @@ class HallOfFame:
         else:
             for i, r in enumerate(dati, start=1):
                 print(f"{i}) {r['nomi']} - Stage {r['stage']} - {r['punti']} punti")
-        print("x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x\n")
+        print("x=" * 15 + "x\n")

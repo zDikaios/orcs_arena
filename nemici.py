@@ -39,7 +39,39 @@ class Enemy:
 
 def summona_nemico(stage: int) -> Enemy:
     lvl = stage
-    nomi_nemici = ["Grak", "Mug", "Zog", "Thrum", "Karg", "Gianluca", "Blud", "Gnash", "Urk", "Drog", "Skab", "Pugg", "Gruk", "Lok", "Brak"]
+    nomi_nemici = [
+        "Grak",
+        "Mug",
+        "Zog",
+        "Grugg",
+        "Uglúk",
+        "Thrum",
+        "Karg",
+        "Gianluca",
+        "Blud",
+        "Gnash",
+        "Urk",
+        "Drog",
+        "Skab",
+        "Pugg",
+        "Gruk",
+        "Lok",
+        "Brak",
+        "Grishnákh",
+        "Shagrat",
+        "Gorbag",
+        "Snaga",
+        "Mauhúr",
+        "Lagduf",
+        "Muzgash",
+        "Radbug",
+        "Gothmog",
+        "Lurtz",
+        "Sharku",
+        "Guritz",
+        "Azog",
+        "Bolg",
+    ]
     max_hp = 30 + stage * 8
     base_damage = 4 + stage
     if stage <= 3:
