@@ -1,7 +1,7 @@
 import os
 from typing import List, Dict, Any
 
-
+#Una Hall of Fame che mostra i 10 migliori punteggi dei giocatori (Punteggio = Stage*100 + Vita residua)
 
 class HallOfFame:
     percorso_hof = "hall_of_fame.bin"
@@ -54,10 +54,10 @@ class HallOfFame:
     @staticmethod
     def mostra():
         dati = HallOfFame.leggi_classifica()
-        print("\n=== Hall of fame ===")
+        print("\nx=x=x=x= Hall of fame =x=x=x=x")
         if not dati:
             print("Nessun record presente, gioca una partita!")
         else:
             for i, r in enumerate(dati, start=1):
                 print(f"{i}) {r['nomi']} - Stage {r['stage']} - {r['punti']} punti")
-        print("===================================\n")
+        print("x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x\n")

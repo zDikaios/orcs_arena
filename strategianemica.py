@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from typing import List
 from characters import personaggi
 
+# Gestione AI nemica, con l'implementazione di nemici più complessi sarà possibile
+# far utilizzare determinati attacchi speciali in determinate situazioni
 
 def prendi_hp(personaggi):
     return personaggi.hp

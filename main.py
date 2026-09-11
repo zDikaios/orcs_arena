@@ -5,7 +5,7 @@ from characters import personaggi
 from nemici import Enemy, summona_nemico
 from creatore import creatorepersonaggio
 from saveload import saveload
-from pozioni import ScudoMagico
+from pozioni import ScudoMagico, Furia
 from hall_of_fame import HallOfFame
 
 
@@ -140,8 +140,14 @@ class Game:
                                 idx = self.players.index(player)
                                 self.players[idx] = ScudoMagico(player, turni=2)
                                 messaggio_scelta = f"{player.name} beve la pozione scudo, difesa raddoppiata per 2 turni"
+                            elif esito == "APPLICA_FURIA":
+                                idx = self.players.index(player)
+                                self.players[idx] = Furia(player, turni=2)
+                                messaggio_scelta = f"{player.name} beve la pozione furia, danni raddoppiati per 2 turni"
                             else:
-                                messaggio_scelta = esito
+                                messaggio_scelta = esito        # Dovrebbe dar la possibilità di riprovare a scegliere un altro oggetto tipo:
+                                                                # elif esito.startswith("ERRORE:") allora append l'oggetto nell'inventario
+                                                                # di nuovo e continue. E si và ad aggiungere ERRORE: negli esiti degli errori
                     elif action == 4:
                         self.salvagioco()
                         print(f"{player.name} ha deciso di prendersi una pausa")
@@ -155,18 +161,17 @@ class Game:
 
                     print(messaggio_scelta)
 
-                # il turno dei nemici (da rendere più interessante)
+                # il turno dei nemici (da rendere più interessante)         ***FIXARE
                 if enemy.ancoravivo() and not self.totalpartykill():
                     outputnemico = enemy.attack(self.players)
                     print(outputnemico)
 
-                # riduce il contatore dei turni del decoratore a fine round
+                # riduce il contatore dei turni dei decoratori a fine round
                 for idx, p in enumerate(self.players):
-                    if isinstance(p, ScudoMagico):
+                    if isinstance(p, (ScudoMagico, Furia)):
                         ancora_valido = p.scala_turno()
                         if not ancora_valido:
-                            print(f"lo scudo magico di {p.name} si e esaurito")
-                            # si toglie il decoratore tornando al personaggio base
+                            print(f"l'effetto di {p.name} si è esaurito")
                             self.players[idx] = p.target
 
 

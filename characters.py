@@ -2,6 +2,8 @@ import random
 from abc import ABC
 from utilities import intervallonumerico, show_bar, richiestanumeroscelta
 
+#Gestione Classi dei giocatori con le loro proprietà
+
 class personaggi(ABC):
     def __init__(self, name: str, level: int = 1):
         self._name = name
@@ -70,7 +72,26 @@ class personaggi(ABC):
         raise NotImplementedError
 
     def usaoggetto(self, item: str, enemy: "Enemy") -> str:
-        raise NotImplementedError
+        # gestione comune degli oggetti condivisi da tutte le classi
+        if item == "Mela":
+            self.heal(15)
+            return f"{self.name} mangia una mela: +15 HP."
+        if item == "Tacchino Arrosto":
+            self.heal(40)
+            return f"{self.name} mangia un tacchino arrosto: +40 HP."
+        if item == "Bomba":
+            enemy.take_damage(12)
+            return f"{self.name} lancia una Bomba: 12 danni al nemico."
+        if item == "GigaBomba":
+            enemy.take_damage(100)
+            return f"{self.name} lancia una GigaBomba: 100 danni al nemico."
+        if item == "Pozione Scudo":
+            return "APPLICA_SCUDO"
+        if item == "Pozione Furia":
+            return "APPLICA_FURIA"
+
+        # se l'oggetto non è tra quelli generici, segnala che non è valido
+        return f"Oggetto sconosciuto: {item}"
 
     def status(self):
         print(f"\n{self.name} (Lv {self.level})")
@@ -115,21 +136,15 @@ class Mage(personaggi):
         return f"{self.name} si cura di {amount} HP (costo {costo} Mana)."
 
     def usaoggetto(self, item: str, enemy: "Enemy") -> str:
-        if item == "Pozione Vita":
-            self.heal(15)                                       #buffare pozione salute, magari 20% maxhp anzichè 155hp ***FIXARE
-            return f"{self.name} usa una Pozione: +15 HP."
         if item == "Pozione Mana":
             before = self._mana
             self._mana = intervallonumerico(self._mana + 10, 0, self._max_mana)
             return f"{self.name} usa Mana Potion: Mana {before}->{self._mana}."
-        if item == "Bomba":
-            enemy.take_damage(12)                           # buffare danno bomba ***FIXARE
-            return f"{self.name} lancia una Bomba: 12 danni al nemico."
         if item == "Pozione Stamina":
             return f"{self.name} non può usare la pozione della stamina (solo per Guerriero)."
-        if item == "Pozione Scudo":
-            return "APPLICA_SCUDO"
-        return f"Oggetto sconosciuto: {item}"
+
+        # riprende gli altri oggetti dalla classe base
+        return super().usaoggetto(item, enemy)
 
 
 class Warrior(personaggi):
@@ -171,18 +186,12 @@ class Warrior(personaggi):
         return f"{self.name} si fascia: +{amount} HP (costo {costo} Stamina)."
 
     def usaoggetto(self, item: str, enemy: "Enemy") -> str:
-        if item == "Pozione Vita":
-            self.heal(15)
-            return f"{self.name} usa una Pozione: +15 HP."
         if item == "Pozione Stamina":
             before = self._stamina
             self._stamina = intervallonumerico(self._stamina + 10, 0, self._max_stamina)
             return f"{self.name} usa Stamina Potion: ST {before}->{self._stamina}."
-        if item == "Bomba":
-            enemy.take_damage(12)
-            return f"{self.name} lancia una Bomba: 12 danni al nemico."
         if item == "Pozione Mana":
             return f"{self.name} non può usare la pozione per mana, (solo per Mago)."
-        if item == "Pozione Scudo":
-            return "APPLICA_SCUDO"
-        return f"Oggetto sconosciuto: {item}"
+
+        # riprende gli altri oggetti dalla classe base
+        return super().usaoggetto(item, enemy)

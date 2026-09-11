@@ -4,6 +4,7 @@ from strategianemica import conpiuvita, conmenovita, attaccarandom
 from utilities import intervallonumerico, show_bar
 from characters import personaggi
 
+#Gestione tipologia di Nemico (futura possibile implementazione di Boss o nemici con attacchi speciali)
 
 class Enemy:
     def __init__(self, name: str, level: int, max_hp: int, hp: int, base_damage: int, strategia):

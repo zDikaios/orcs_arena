@@ -1,11 +1,12 @@
 from typing import List, Dict
 from characters import Mage, Warrior
 
+# Gestione salvataggio e caricamento del savefile
+
 class saveload:
 
-
+        #Salvataggio
     def save(path: str, num_players: int, stage: int, players: List[object], inventory: List[str]) -> None:
-
         lines: List[str] = []
         lines.append(f"numero_giocatori={num_players}")
 
@@ -21,15 +22,15 @@ class saveload:
                 lines.append(f"nome_giocatore={player.name}")
             except Exception:
                 pass
+
         elif num_players == 2 and players and len(players) >= 2:
             player1 = players[0]
             player2 = players[1]
-
             classe1 = "warrior" if isinstance(player1, Warrior) else "mage"
             classe2 = "warrior" if isinstance(player2, Warrior) else "mage"
-
             lines.append(f"classe_giocatore1={classe1}")
             lines.append(f"classe_giocatore2={classe2}")
+
             try:
                 lines.append(f"nome_giocatore1={player1.name}")
                 lines.append(f"nome_giocatore2={player2.name}")
@@ -38,11 +39,10 @@ class saveload:
 
         lines.append(f"stage={stage}")
         lines.append("oggetti=" + ",".join(inventory) if inventory else "oggetti=")
-
         with open(path, "w") as f:
             f.write("\n".join(lines))
 
-
+        # Caricamento
     def load(path: str) -> Dict[str, object]:
         with open(path, "r") as f:
             raw = [line.rstrip("\n") for line in f.readlines()]
@@ -57,7 +57,6 @@ class saveload:
 
         num_players = int(dati_salvataggio.get("numero_giocatori", "1"))
         stage = int(dati_salvataggio.get("stage", "1"))
-
         listaoggetti = dati_salvataggio.get("oggetti", "")
         inventory = [x for x in listaoggetti.split(",") if x] if listaoggetti else []
 
@@ -73,7 +72,6 @@ class saveload:
 
             for _ in range(stage - 1):  #i giocatori livellano tante volte quanti stage son stati superati
                 player.levelup()
-
             players.append(player)
 
 
