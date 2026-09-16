@@ -1,12 +1,15 @@
-from characters import Mage, Warrior, personaggi
+from characters import Warrior, Mage, Cleric
 
 # Factory di creazione personaggio
 
 class creatorepersonaggio:
-    def create(classe: str, name: str) -> personaggi:
-        classe = classe.lower()
-        if classe == "mage":
-            return Mage(name=name)
-        if classe == "warrior":
-            return Warrior(name=name)
-        raise ValueError(f"Tipo personaggio non valido: {classe}")
+    @staticmethod
+    def create(classe: str, name: str):
+        c = classe.strip().lower()
+        if c in ("guerriero", "warrior"):
+            return Warrior(name)
+        elif c in ("mago", "mage"):
+            return Mage(name)
+        elif c in ("chierico", "cleric"):
+            return Cleric(name)
+        raise ValueError(f"ERRORE: Classe sconosciuta: {classe}")

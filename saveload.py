@@ -1,48 +1,35 @@
 from typing import List, Dict
-from characters import Mage, Warrior
+from creatore import creatorepersonaggio
+
 
 # Gestione salvataggio e caricamento del savefile
 
 class saveload:
 
-        #Salvataggio
+    @staticmethod
     def save(path: str, num_players: int, stage: int, players: List[object], inventory: List[str]) -> None:
         lines: List[str] = []
         lines.append(f"numero_giocatori={num_players}")
 
-        if num_players == 1 and players:
-            player = players[0]
-            if isinstance(player, Mage):
-                lines.append("classe_giocatore=mage")
-            elif isinstance(player, Warrior):
-                lines.append("classe_giocatore=warrior")
-            else:
-                lines.append("classe_giocatore=warrior")
-            try:
-                lines.append(f"nome_giocatore={player.name}")
-            except Exception:
-                pass
+        # Serializza dinamicamente qualunque classe e numero di giocatori
+        for i, player in enumerate(players, start=1):
+            # Se il personaggio ha un Decorator attivo, estraiamo l'oggetto reale sottostante
+            pg_reale = getattr(player, "target", player)
 
-        elif num_players == 2 and players and len(players) >= 2:
-            player1 = players[0]
-            player2 = players[1]
-            classe1 = "warrior" if isinstance(player1, Warrior) else "mage"
-            classe2 = "warrior" if isinstance(player2, Warrior) else "mage"
-            lines.append(f"classe_giocatore1={classe1}")
-            lines.append(f"classe_giocatore2={classe2}")
+            # Ricava dinamicamente il nome della classe ('warrior', 'mage', 'cleric', ecc.) -> scalabilità
+            classe_nome = pg_reale.__class__.__name__.lower()
+            nome_giocatore = getattr(pg_reale, "name", f"Giocatore{i}")
 
-            try:
-                lines.append(f"nome_giocatore1={player1.name}")
-                lines.append(f"nome_giocatore2={player2.name}")
-            except Exception:
-                pass
+            lines.append(f"classe_giocatore{i}={classe_nome}")
+            lines.append(f"nome_giocatore{i}={nome_giocatore}")
 
         lines.append(f"stage={stage}")
-        lines.append("oggetti=" + ",".join(inventory) if inventory else "oggetti=")
+        lines.append("oggetti=" + (",".join(inventory) if inventory else ""))
+
         with open(path, "w") as f:
             f.write("\n".join(lines))
 
-        # Caricamento
+    @staticmethod
     def load(path: str) -> Dict[str, object]:
         with open(path, "r") as f:
             raw = [line.rstrip("\n") for line in f.readlines()]
@@ -61,38 +48,28 @@ class saveload:
         inventory = [x for x in listaoggetti.split(",") if x] if listaoggetti else []
 
         players: List[object] = []
-        if num_players == 1:
-            classe = dati_salvataggio.get("classe_giocatore", "warrior").lower()
-            name = dati_salvataggio.get("nome_giocatore", "Player")
+        for i in range(1, num_players + 1):
+            # Compatibilità: legge classe_giocatore1 (o fallback classe_giocatore per vecchi save a 1 player)
+            classe = dati_salvataggio.get(f"classe_giocatore{i}")
+            if not classe and i == 1:
+                classe = dati_salvataggio.get("classe_giocatore", "warrior")
 
-            if classe == "mage":
-                player = Mage(name=name)
-            else:
-                player = Warrior(name=name)
+            name = dati_salvataggio.get(f"nome_giocatore{i}")
+            if not name and i == 1:
+                name = dati_salvataggio.get("nome_giocatore", "Player")
 
-            for _ in range(stage - 1):  #i giocatori livellano tante volte quanti stage son stati superati
+            # La Factory istanzia dinamicamente qualsiasi classe passata
+            player = creatorepersonaggio.create(classe.strip().lower(), name)
+
+            # I giocatori livellano tante volte quanti sono gli stage superati
+            for _ in range(stage - 1):
                 player.levelup()
+
             players.append(player)
 
-
-        else:
-            classe1 = dati_salvataggio.get("classe_giocatore1", "warrior").lower()
-            classe2 = dati_salvataggio.get("classe_giocatore2", "mage").lower()
-
-            name1 = dati_salvataggio.get("nome_giocatore1", "Warrior")
-            name2 = dati_salvataggio.get("nome_giocatore2", "Mage")
-            if classe1 == "mage":
-                p1 = Mage(name=name1)
-            else:
-                p1 = Warrior(name=name1)
-            if classe2 == "mage":
-                p2 = Mage(name=name2)
-            else:
-                p2 = Warrior(name=name2)
-            for _ in range(stage - 1):
-                p1.levelup()
-                p2.levelup()
-            players.extend([p1, p2])
-
-        return {"num_players": num_players, "stage": stage, "players": players, "inventory": inventory}
-
+        return {
+            "num_players": num_players,
+            "stage": stage,
+            "players": players,
+            "inventory": inventory
+        }

@@ -24,7 +24,7 @@ class Enemy:
     def attack(self, targets: List[personaggi]) -> str:
         alive = [t for t in targets if t.ancoravivo()]
         if not alive:
-            return f"{self.name} non ha bersagli."
+            return f"ERRORE: {self.name} non ha bersagli."
 
         target = self.strategia.scegli_bersaglio(targets)  # oppure alive
 
