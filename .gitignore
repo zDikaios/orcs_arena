@@ -1,3 +1,4 @@
-/salvataggio.txt
-/hall_of_fame.bin
-/generatorehof.py
+/src/salvataggio.txt
+/src/hall_of_fame.bin
+/test/generatorehof.py
+/CODE_OF_CONDUCT.md

@@ -1,12 +1,17 @@
 from typing import List, Dict, Optional
-from utilities import richiestanumeroscelta, si_o_no, ee2, titletext2
-from items import random_item, descrizione_oggetti
-from characters import personaggi, Cleric
-from nemici import Enemy, summona_nemico
-from creatore import creatorepersonaggio
-from saveload import saveload
-from pozioni import ScudoMagico, Furia
-from hall_of_fame import HallOfFame
+from src.utilities import richiestanumeroscelta, si_o_no, ee2, titletext2
+from src.items import random_item, descrizione_oggetti
+from src.characters import personaggi, Cleric
+from src.nemici import Enemy, summona_nemico
+from src.creatore import creatorepersonaggio
+from src.saveload import saveload
+from src.pozioni import ScudoMagico, Furia
+from src.hall_of_fame import HallOfFame
+
+
+## Orcs Arena 5.0
+## Interfaccia grafica
+
 
 
 class Game:
