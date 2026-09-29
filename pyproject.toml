@@ -1,0 +1,20 @@
+[project]
+name = "oopproject"
+version = "0.5.0"
+description = "A Turn Based RPG"
+authors = [
+    { name = "tporcari", email = "tporcari@studenti.lum.it" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "pillow>=12.3.0",
+    "pygame>=2.6.1",
+    "pyinstaller",
+]
+
+[project.scripts]
+oopproject = "oopproject:main"
+
+[build-system]
+requires = ["uv_build>=0.12.20,<0.13.0"]
+build-backend = "uv_build"
