@@ -1,4 +1,4 @@
-Orcs Arena - Progetto Object Oriented Programming
+Orcs Arena 5.0 - Progetto Object Oriented Programming
 =
 
 Descrizione
@@ -12,16 +12,23 @@ I nemici aumentano di difficoltà ogni round e il loro comportamento
 cambia in base allo stadio raggiunto.
 E' inoltre presente una Hall of Fame con i migliori 10 punteggi registrati dai giocatori
 
+Ultima versione: GUI Edition
+
 
 Requisiti
 -
 - Python 3.13
+- pillow 12.3.0
+- pygame 2.6.1 
+- pyinstaller
+- 
 
 Struttura del Progetto
 -
 Il progetto è organizzato in più file Python per una migliore
 manutenibilità:
-- `main.py`: Menu principale e loop di gioco
+- `main.py`: Menu principali
+- `ui.py`: l'intera user interface gestita con pygame
 - `characters.py`: Definisce le classi Character, Mago, Guerriero e le loro abilità
 - `nemici.py`: Definisce la classe Enemy e le sue abilità
 - `items.py`: Definisce gli oggetti utilizzabili nel gioco
@@ -37,4 +44,4 @@ manutenibilità:
 
 Guida all'avvio
 -
-Eseguire il main
+Eseguire il main o l'exe di gioco
